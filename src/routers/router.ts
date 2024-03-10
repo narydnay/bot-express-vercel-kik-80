@@ -3,7 +3,7 @@ export const route = Router();
 
 
 route.get('/test', (req:Request, res:Response) => {
-  
-  res.status(200).json({message: 'send message success!'})
+
+  res.status(200).json({message: 'send 2 message success!'})
 })
 
