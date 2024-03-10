@@ -1,7 +1,3 @@
-// const {initializeApp} = require('firebase/app');
-// const { getFirestore, collection, addDoc, getDoc, doc, namedQuery, refEqual } = require('firebase/firestore');
-// converters are used with `setDoc`, `addDoc`, and `getDoc`
-
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
@@ -18,8 +14,7 @@ const fbApp = initializeApp({
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-9tb50%40t-b-kik-80.iam.gserviceaccount.com",
     "universe_domain": "googleapis.com"
-  }
-  )
+  })
 });
 const db = getFirestore(fbApp);
 
@@ -47,7 +42,7 @@ class queryDataBase {
       let results:[] = [];
       const dbConnect = db.collection('mybase');
       // console.log(dbConnect)
-      const listData = await dbConnect.where(nameField,qOperant!, value ).get()
+      const listData = await dbConnect.where(nameField,qOperant, value ).get()
       if (listData.empty) {
         return {
           message: 'Data not find.',
