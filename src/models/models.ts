@@ -6,7 +6,7 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { join } from 'path';
 
-const certData:string = join(__dirname, '../','config/','t-b-kik-80-firebase-adminsdk-9tb50-407289ee90.json');
+const certData:string = join('../','config/','t-b-kik-80-firebase-adminsdk-9tb50-407289ee90.json');
 const fbApp = initializeApp({
   credential: cert(certData)
 });
