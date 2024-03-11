@@ -27,7 +27,7 @@ class Config{
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-9tb50%40t-b-kik-80.iam.gserviceaccount.com",
         "universe_domain": "googleapis.com"
       }
-  }
+  } 
   get(name){
     switch(name){ 
       case 'token-bot':
