@@ -21,7 +21,7 @@ class Config{
     serviceAccount: join(__dirname, './','t-b-kik-80-firebase-adminsdk-9tb50-407289ee90.json')
   }
   get(name){
-    switch(name){
+    switch(name){ 
       case 'token-bot':
         return this.state.tokenBot;
       case 'host':
