@@ -14,14 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const models_1 = __importDefault(require("../models/models"));
+const axios_1 = __importDefault(require("axios"));
 const bot = new telegraf_1.Telegraf('6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc');
 const dbFirebase = new models_1.default();
 bot.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const { message } = ctx;
     if (message.text === 'список') {
         try {
-            // const listPrisoner = await axios.get('https://t-bot-kik.vercel.app/get-all-prisoners')
-            const listPrisoner = yield dbFirebase.getDataFromDb({ nameField: 'name', qOperant: '!=', value: false });
+            const listPrisoner = yield axios_1.default.get('https://bot-express-vercel-kik-80.vercel.app/api/test');
+            // const listPrisoner: any = await dbFirebase.getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
             return ctx.reply('hi bro we work good, what are doing? ...' + JSON.stringify(listPrisoner.splite(0, 3), null, 4));
         }
         catch (err) {
