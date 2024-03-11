@@ -1,0 +1,1 @@
+git add . && git commit -m"com v1" && git push && vercel && vercel --prod
