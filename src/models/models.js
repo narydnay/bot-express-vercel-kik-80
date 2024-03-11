@@ -36,7 +36,6 @@ class queryDataBase {
 
   async getDataFromDb({nameField = 'name', qOperant = '!=', value = false}){
     try {
-
       let results = [];
       const dbConnect = db.collection('mybase');
       // console.log(dbConnect)
