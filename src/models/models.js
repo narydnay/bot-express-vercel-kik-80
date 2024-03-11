@@ -18,28 +18,26 @@ const fbApp = initializeApp({
 });
 const db = getFirestore(fbApp);
 
-type SetData = (data: object, nameDb: string) => object
-
 class queryDataBase {
-  // async setData(data, nameDb):void{
-  //   try {
-  //     await db
-  //           .collection(nameDb)
-  //           .doc(data.name)
-  //           .set({
-  //             ...data,
-  //             dateCreate: Timestamp.fromDate(new Date()),
-  //             dateUpdate: null,
-  //           });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  async setData(data, nameDb){
+    try {
+      await db
+            .collection(nameDb)
+            .doc(data.name)
+            .set({
+              ...data,
+              dateCreate: Timestamp.fromDate(new Date()),
+              dateUpdate: null,
+            });
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async getDataFromDb({nameField = 'name', qOperant = '!=', value = false}){
     try {
 
-      let results:[] = [];
+      let results = [];
       const dbConnect = db.collection('mybase');
       // console.log(dbConnect)
       const listData = await dbConnect.where(nameField,qOperant, value ).get()
@@ -50,7 +48,9 @@ class queryDataBase {
       }  
       listData.forEach( doc => {
         // console.log(doc.id, '=>', doc.data());
-        results.push(doc.data())
+        let obj = {};
+        obj = doc.data();
+        results.push(obj)
       });
       return results;      
     } catch (error) {
@@ -67,4 +67,4 @@ class queryDataBase {
   }
 }
 
-export {queryDataBase};
+export default queryDataBase;

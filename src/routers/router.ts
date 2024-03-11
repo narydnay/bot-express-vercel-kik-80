@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import {queryDataBase} from "../models/models";
+import queryDataBase from "../models/models.js";
 export const route = Router();
 
 const db = new queryDataBase()
