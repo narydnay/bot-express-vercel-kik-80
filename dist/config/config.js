@@ -1,10 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
-const path_1 = require("path");
-const node_path_1 = require("node:path");
-const node_url_1 = require("node:url");
-const __dirname = (0, node_path_1.dirname)((0, node_url_1.fileURLToPath)(import.meta.url));
 class Config {
     constructor() {
         this.state = {
