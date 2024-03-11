@@ -8,12 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.route = void 0;
 const express_1 = require("express");
-const models_1 = require("../models/models");
+const models_js_1 = __importDefault(require("../models/models.js"));
 exports.route = (0, express_1.Router)();
-const db = new models_1.queryDataBase();
+const db = new models_js_1.default();
 exports.route.get('/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const listPrisoner = yield db.getDataFromDb({ nameField: 'name', qOperant: '!=', value: false });
