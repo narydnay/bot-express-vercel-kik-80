@@ -12,12 +12,69 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadCsv = void 0;
+exports.uploadCsv = exports.uploadXls = void 0;
 const multer_1 = __importDefault(require("multer"));
 const sync_1 = require("csv-parse/sync");
-const models_1 = __importDefault(require("../models/models"));
+const modelsPostgress_1 = require("../models/modelsPostgress");
+const xlsx_1 = require("xlsx");
+const modelsFirebase_1 = require("../models/modelsFirebase");
+const uploadXls = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const db = new modelsFirebase_1.queryDataBaseFirebase();
+        const upload = (0, multer_1.default)().single('upload_xls');
+        upload(req, res, function (err) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (err instanceof multer_1.default.MulterError) {
+                    // Случилась ошибка Multer при загрузке.
+                    return res.status(500).json({
+                        info: {
+                            message: 'Сталася помилка Multer під час завантаження. Зв\'яжіться з адміністратором.',
+                            status: false
+                        }
+                    });
+                }
+                else {
+                    try {
+                        const { file } = req;
+                        // console.log({file})
+                        if (Object.keys(file).length) {
+                            const { fieldname, originalname, encoding, mimetype, buffer, size } = file;
+                            const result = yield db.setData((0, xlsx_1.read)(buffer).Sheets["Діюча"], 'mybase');
+                            // return res.status(200).json({result})
+                            return res.status(200).json({
+                                info: {
+                                    message: 'Файл успішно завантажено.',
+                                    status: true
+                                }
+                            });
+                        }
+                    }
+                    catch (error) {
+                        // При загрузке произошла неизвестная ошибка.
+                        console.log({ error });
+                        return res.status(500).json({
+                            info: {
+                                message: 'Під час завантаження сталася невідома помилка.' + JSON.stringify(error.message),
+                                status: false
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    }
+    catch (error) {
+        return res.status(500).json(({
+            info: {
+                message: 'problem obtain',
+                status: false
+            }
+        }));
+    }
+});
+exports.uploadXls = uploadXls;
 const uploadCsv = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const db = new models_1.default();
+    const db = new modelsPostgress_1.queryDataBasePostgress();
     const upload = (0, multer_1.default)().single('upload_csv');
     upload(req, res, function (err) {
         return __awaiter(this, void 0, void 0, function* () {

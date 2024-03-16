@@ -8,16 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
-const models_1 = __importDefault(require("../models/models"));
+const modelsPostgress_1 = require("../models/modelsPostgress");
 const helper_1 = require("../helpers/helper");
-const storage_1 = require("firebase/storage");
 const app_1 = require("firebase/app");
 const utils_tg_1 = require("./utils-tg");
+const storage_1 = require("firebase/storage");
 const app = (0, app_1.initializeApp)({
     apiKey: "AIzaSyDArYuP8lbb94JbErr6Y3xKwQS2oPE_zTc",
     authDomain: "t-b-kik-80.firebaseapp.com",
@@ -28,13 +25,8 @@ const app = (0, app_1.initializeApp)({
     measurementId: "G-D1X8CLDW6X"
 });
 const firebaseApp = (0, app_1.getApp)();
-const options = {
-    webHook: {
-        port: 443
-    }
-};
-const bot = new telegraf_1.Telegraf('6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc', options);
-const dbFirebase = new models_1.default();
+const bot = new telegraf_1.Telegraf('6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg');
+const dbFirebase = new modelsPostgress_1.queryDataBasePostgress();
 const default_pagination = 40;
 let resultListPrisoner;
 let fullListPrisoners;
@@ -50,6 +42,10 @@ bot.start((ctx) => {
                 [
                     {
                         text: 'Як користуватися',
+                    },
+                    {
+                        text: 'Страйовка',
+                        callback_data: "stroyvka"
                     },
                     {
                         text: '❌ Сховати меню',
@@ -210,7 +206,7 @@ bot.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         }
         catch (err) {
             console.log({ err });
-            return ctx.sendMessage(ctx.chat.id, 'ERROR? ...\n' + JSON.stringify(err, null, 4));
+            return ctx.sendMessage('ERROR? ...\n' + JSON.stringify(err, null, 4));
         }
     }
     else if (['1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12', '130', '131', '14', '15', '16', '17', 'КДіР', 'ДСР', 'ДОВ'].includes(message.text)) {
@@ -270,7 +266,8 @@ bot.on('callback_query', (ctx) => __awaiter(void 0, void 0, void 0, function* ()
             // await ctx.sendMessage(`*__страйовка__*     покажет актуальную страёвку`, { parse_mode: "MarkdownV2", });
             yield ctx.sendMessage(`*__список__*        покажет весь список с пагинацией в лагере`, { parse_mode: "MarkdownV2", });
             yield ctx.sendMessage(`*__16__*      выдаст списочный по отделению № 16`, { parse_mode: "MarkdownV2", });
-            yield ctx.sendMessage(`*__Iванов?__*       будет искать по всем совподениям по согласным`, { parse_mode: "MarkdownV2", });
+            yield ctx.sendMessage(`*__Iванов__*       будет искать по всем совподениям слов`, { parse_mode: "MarkdownV2", });
+            yield ctx.sendMessage(`*__Iванов?__*       со знаком ? будет искать по всем совподениям из согласных`, { parse_mode: "MarkdownV2", });
             // await ctx.sendMessage(`*__г 1984__*       ищет всех по году рождения`, { parse_mode: "MarkdownV2", });
             // await ctx.sendMessage(`*__д 27__*          ищет всех по дате рождения`, { parse_mode: "MarkdownV2", });
             // await ctx.sendMessage(`*__м 27__*          ищет всех по месецу рождения`, { parse_mode: "MarkdownV2", });
@@ -335,17 +332,62 @@ bot.on('callback_query', (ctx) => __awaiter(void 0, void 0, void 0, function* ()
             return (0, helper_1.showButtonsPagination)(ctx, resultListPrisoner, page, from_current_pagination, to_current_pagination, allPaginationPage);
             // пагинация в лево
         }
+        else if (name.data.includes('sub_photo_')) {
+            try {
+                const idUsers = name.data.split('_').pop();
+                if (fullListPrisoners.filter((el) => +(el === null || el === void 0 ? void 0 : el.id) === +idUsers).length > 0) {
+                    const fullName = fullListPrisoners.filter((el) => +(el === null || el === void 0 ? void 0 : el.id) === +idUsers)[0].name;
+                    const fullDate = fullListPrisoners.filter((el) => +(el === null || el === void 0 ? void 0 : el.id) === +idUsers)[0].full_age;
+                    const storage = (0, storage_1.getStorage)(firebaseApp, "gs://t-b-kik-80.appspot.com");
+                    ///face_photo
+                    let spaceRefPhoto = '';
+                    let linkPhoto = '';
+                    try {
+                        spaceRefPhoto = (0, storage_1.ref)(storage, `/face_photo/${fullName} {${fullDate}} f.jpg`);
+                        linkPhoto = yield (0, storage_1.getDownloadURL)(spaceRefPhoto);
+                    }
+                    catch (error) {
+                        spaceRefPhoto = (0, storage_1.ref)(storage, `/face_photo/${fullName} {${fullDate}} f.JPG`);
+                        linkPhoto = yield (0, storage_1.getDownloadURL)(spaceRefPhoto);
+                    }
+                    ctx.sendPhoto(linkPhoto);
+                }
+            }
+            catch (error) {
+                ctx.sendMessage('За вашим запитом знайдено 0');
+            }
+        }
+        else if (name.data === 'stroyvka') {
+        }
         else {
             try {
                 // нужно показать карточку
                 if (fullListPrisoners.filter((el) => +(el === null || el === void 0 ? void 0 : el.id) === +name.data).length > 0) {
-                    console.log('catch error ');
                     const fullName = fullListPrisoners.filter((el) => +(el === null || el === void 0 ? void 0 : el.id) === +name.data)[0].name;
                     const fullDate = fullListPrisoners.filter((el) => +(el === null || el === void 0 ? void 0 : el.id) === +name.data)[0].full_age;
                     const storage = (0, storage_1.getStorage)(firebaseApp, "gs://t-b-kik-80.appspot.com");
-                    const spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${fullDate}}.JPG`);
-                    const link = yield (0, storage_1.getDownloadURL)(spaceRef);
-                    ctx.sendPhoto(link);
+                    let spaceRef = '';
+                    let link = '';
+                    try {
+                        spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${fullDate}}.JPG`);
+                        link = yield (0, storage_1.getDownloadURL)(spaceRef);
+                    }
+                    catch (error) {
+                        spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${fullDate}}.jpg`);
+                        link = yield (0, storage_1.getDownloadURL)(spaceRef);
+                    }
+                    ctx.sendPhoto(link, {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    {
+                                        text: 'получить фото',
+                                        callback_data: 'sub_photo_' + name.data
+                                    }
+                                ]
+                            ]
+                        }
+                    });
                 }
             }
             catch (error) {
@@ -358,22 +400,9 @@ bot.on('callback_query', (ctx) => __awaiter(void 0, void 0, void 0, function* ()
     }
 }));
 // ctx.reply('find ' + JSON.stringify('Найти не удалось', null, 4))     
-// process.once('SIGINT', () => bot.stop('SIGINT'))
-// process.once('SIGTERM', () => bot.stop('SIGTERM'))
 exports.default = bot;
-// {
-//   "code_article": "307ч2, 72ч5",
+//
 //   "isGuard": true,
-//   "full_age": "04.09.1964",
-//   "image_url": "Єгоров Андрій Олексійович{04.09.1964}",
-//   "dateUpdate": null,
-//   "period_punish": "6р.п/в з конф.ос/м",
-//   "name": "Єгоров Андрій Олексійович",
-//   "dateCreate": {
-//       "_seconds": 1710058735,
-//       "_nanoseconds": 505000000
-//   },
-//   "otd": "16"
 /**
  create table diucha(
 id serial not null,

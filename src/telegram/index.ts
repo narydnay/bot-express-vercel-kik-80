@@ -1,9 +1,9 @@
 import { Telegraf } from "telegraf";
-import queryDataBase from "../models/models";
+import {queryDataBasePostgress} from "../models/modelsPostgress";
 import { showButtonsPagination } from "../helpers/helper";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { getApp, initializeApp } from "firebase/app";
 import { matchNames, matchNamesSpecifics } from "./utils-tg";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 const app = initializeApp({
   apiKey: "AIzaSyDArYuP8lbb94JbErr6Y3xKwQS2oPE_zTc",
@@ -16,14 +16,8 @@ const app = initializeApp({
 });
 const firebaseApp = getApp();
 
-
-const options: object = {
-  webHook: {
-    port: 443
-  }
-};
-const bot: any = new Telegraf('6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc', options);
-const dbFirebase = new queryDataBase();
+const bot: any = new Telegraf('6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg');
+const dbFirebase = new queryDataBasePostgress();
 const default_pagination: number = 40;
 
 let resultListPrisoner: [];
@@ -41,6 +35,10 @@ bot.start((ctx: any) => {
         [
           {
             text: 'Як користуватися',
+          },
+          {
+            text: 'Страйовка',
+            callback_data: "stroyvka"
           },
           {
             text: '❌ Сховати меню',
@@ -136,7 +134,7 @@ bot.on('chat_shared', (ctx: any) => {
 })
 
 bot.on('text', async (ctx: any) => {
-  const { message } = ctx;
+  const { message } = ctx;  
 
 
 
@@ -204,7 +202,7 @@ bot.on('text', async (ctx: any) => {
 
     } catch (err) {
       console.log({ err })
-      return ctx.sendMessage(ctx.chat.id, 'ERROR? ...\n' + JSON.stringify(err, null, 4))
+      return ctx.sendMessage('ERROR? ...\n' + JSON.stringify(err, null, 4))
     }
   } else if (['1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12', '130', '131', '14', '15', '16', '17', 'КДіР', 'ДСР', 'ДОВ'].includes(message.text)) {
     fullListPrisoners = await dbFirebase.getData({ nameField: 'name', qOperant: '!=', value: false })
@@ -262,7 +260,8 @@ bot.on('callback_query', async (ctx: any) => {
       // await ctx.sendMessage(`*__страйовка__*     покажет актуальную страёвку`, { parse_mode: "MarkdownV2", });
       await ctx.sendMessage(`*__список__*        покажет весь список с пагинацией в лагере`, { parse_mode: "MarkdownV2", });
       await ctx.sendMessage(`*__16__*      выдаст списочный по отделению № 16`, { parse_mode: "MarkdownV2", });
-      await ctx.sendMessage(`*__Iванов?__*       будет искать по всем совподениям по согласным`, { parse_mode: "MarkdownV2", });
+      await ctx.sendMessage(`*__Iванов__*       будет искать по всем совподениям слов`, { parse_mode: "MarkdownV2", });
+      await ctx.sendMessage(`*__Iванов?__*       со знаком ? будет искать по всем совподениям из согласных`, { parse_mode: "MarkdownV2", });
 
       // await ctx.sendMessage(`*__г 1984__*       ищет всех по году рождения`, { parse_mode: "MarkdownV2", });
       // await ctx.sendMessage(`*__д 27__*          ищет всех по дате рождения`, { parse_mode: "MarkdownV2", });
@@ -325,17 +324,58 @@ bot.on('callback_query', async (ctx: any) => {
       })
       return showButtonsPagination(ctx, resultListPrisoner, page, from_current_pagination, to_current_pagination, allPaginationPage);
       // пагинация в лево
-    } else {
+    } else if(name.data.includes('sub_photo_')){
+      try {
+        const idUsers = name.data.split('_').pop();
+        if (fullListPrisoners.filter((el: any) => +el?.id === +idUsers).length > 0) {
+          const fullName = fullListPrisoners.filter((el: any) => +el?.id === +idUsers)[0].name;
+          const fullDate = fullListPrisoners.filter((el: any) => +el?.id === +idUsers)[0].full_age;
+          const storage = getStorage(firebaseApp, "gs://t-b-kik-80.appspot.com");
+          ///face_photo
+          let spaceRefPhoto:any = '';
+          let linkPhoto:any = '';
+          try {
+            spaceRefPhoto = ref(storage, `/face_photo/${fullName} {${fullDate}} f.jpg`);                        
+            linkPhoto = await getDownloadURL(spaceRefPhoto)
+          } catch (error) {
+            spaceRefPhoto = ref(storage, `/face_photo/${fullName} {${fullDate}} f.JPG`);            
+            linkPhoto = await getDownloadURL(spaceRefPhoto)
+          }
+          ctx.sendPhoto(linkPhoto);
+        }        
+      } catch (error) {
+        ctx.sendMessage('За вашим запитом знайдено 0')
+      }
+    }else if(name.data === 'stroyvka' ){
+
+    }else{
       try {
         // нужно показать карточку
         if (fullListPrisoners.filter((el: any) => +el?.id === +name.data).length > 0) {
-          console.log('catch error ')
           const fullName = fullListPrisoners.filter((el: any) => +el?.id === +name.data)[0].name;
           const fullDate = fullListPrisoners.filter((el: any) => +el?.id === +name.data)[0].full_age;
           const storage = getStorage(firebaseApp, "gs://t-b-kik-80.appspot.com");
-          const spaceRef = ref(storage, `/cards_prisoner/${fullName} {${fullDate}}.JPG`);
-          const link = await getDownloadURL(spaceRef)
-          ctx.sendPhoto(link)
+          let spaceRef:any = '';
+          let link:any = '';
+          try {
+            spaceRef = ref(storage, `/cards_prisoner/${fullName} {${fullDate}}.JPG`);            
+            link = await getDownloadURL(spaceRef)
+          } catch (error) {
+            spaceRef = ref(storage, `/cards_prisoner/${fullName} {${fullDate}}.jpg`);                        
+            link = await getDownloadURL(spaceRef)
+          }
+          ctx.sendPhoto(link, {
+            reply_markup:{
+              inline_keyboard: [
+                [
+                  {
+                    text: 'получить фото',
+                    callback_data: 'sub_photo_' + name.data
+                  }
+                ]
+              ]
+            }
+          })
         }
       } catch (error) {
         ctx.sendMessage('За вашим запитом знайдено 0')
@@ -348,26 +388,19 @@ bot.on('callback_query', async (ctx: any) => {
 
 })
 // ctx.reply('find ' + JSON.stringify('Найти не удалось', null, 4))     
-
-// process.once('SIGINT', () => bot.stop('SIGINT'))
-// process.once('SIGTERM', () => bot.stop('SIGTERM'))
-
 export default bot;
 
 
-// {
-//   "code_article": "307ч2, 72ч5",
+
+//
+
 //   "isGuard": true,
-//   "full_age": "04.09.1964",
-//   "image_url": "Єгоров Андрій Олексійович{04.09.1964}",
-//   "dateUpdate": null,
-//   "period_punish": "6р.п/в з конф.ос/м",
-//   "name": "Єгоров Андрій Олексійович",
-//   "dateCreate": {
-//       "_seconds": 1710058735,
-//       "_nanoseconds": 505000000
-//   },
-//   "otd": "16"
+
+
+
+
+ 
+
 
 /**
  create table diucha(

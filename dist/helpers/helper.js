@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.showButtonsPagination = void 0;
+exports.ExcelDateToJSDate = exports.showButtonsPagination = void 0;
 const showButtonsPagination = (ctx, resultListPrisoner, page, from_current_pagination, to_current_pagination, allPaginationPage) => {
     let pagination = [];
     if (+page === +allPaginationPage && allPaginationPage >= 2) {
@@ -24,4 +24,23 @@ const showButtonsPagination = (ctx, resultListPrisoner, page, from_current_pagin
     });
 };
 exports.showButtonsPagination = showButtonsPagination;
+function ExcelDateToJSDate(date) {
+    const res = new Date(Math.round((date - 25569) * 86400 * 1000));
+    if (Object.prototype.toString.call(res) === "[object Date]") {
+        // it is a date
+        if (isNaN(res)) { // d.getTime() or d.valueOf() will also work
+            // date object is not valid
+            return 'Invalid Date';
+        }
+        else {
+            // date object is valid
+            return res;
+        }
+    }
+    else {
+        return 'Invalid Date';
+        // not a date object
+    }
+}
+exports.ExcelDateToJSDate = ExcelDateToJSDate;
 //# sourceMappingURL=helper.js.map

@@ -1,10 +1,64 @@
 import { Request, Response, NextFunction } from "express";
 import multer from 'multer';
 import { parse } from 'csv-parse/sync';
-import queryDataBase from "../models/models";
+import {queryDataBasePostgress} from "../models/modelsPostgress";
+import {read} from 'xlsx';
+import { queryDataBaseFirebase } from "../models/modelsFirebase";
 
+export const uploadXls = async (req:Request, res: Response): Promise<Response> => {
+  try {
+    const db = new queryDataBaseFirebase()
+    const upload = multer().single('upload_xls');
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        // Случилась ошибка Multer при загрузке.
+        return res.status(500).json({
+          info: {
+            message: 'Сталася помилка Multer під час завантаження. Зв\'яжіться з адміністратором.',
+          status: false
+        }
+      })
+    } else {      
+      try {
+        const { file } = req;
+        // console.log({file})
+        if (Object.keys(file).length) {
+          const { fieldname, originalname, encoding, mimetype, buffer, size } = file
+          const result = await db.setData(read(buffer).Sheets["Діюча"],'mybase');
+          // return res.status(200).json({result})
+          return res.status(200).json({
+            info:{
+              message: 'Файл успішно завантажено.',
+              status: true
+            }
+          })
+        }
+        
+
+      } catch (error) {
+        // При загрузке произошла неизвестная ошибка.
+        console.log({error})
+        return res.status(500).json({
+          info:{
+            message: 'Під час завантаження сталася невідома помилка.' + JSON.stringify(error.message),
+            status: false
+          }
+        })
+      }
+    }
+  })
+    
+  } catch (error) {
+    return res.status(500).json(({
+      info: {
+        message: 'problem obtain',
+        status: false
+      }
+    }))
+  }
+}
 export const uploadCsv = async (req:Request, res: Response): Promise<Response> => {
-  const db = new queryDataBase()
+  const db = new queryDataBasePostgress()
   const upload = multer().single('upload_csv');
   upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {

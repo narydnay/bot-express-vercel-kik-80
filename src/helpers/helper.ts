@@ -19,3 +19,20 @@ export const showButtonsPagination = (ctx: any, resultListPrisoner:[], page:numb
     }
   })
 }
+
+export function ExcelDateToJSDate(date:any) {
+    const res: any = new Date(Math.round((date - 25569)*86400*1000));
+    if (Object.prototype.toString.call(res) === "[object Date]") {
+      // it is a date
+      if (isNaN(res)) { // d.getTime() or d.valueOf() will also work
+        // date object is not valid
+        return 'Invalid Date'
+      } else {
+        // date object is valid
+        return res
+      }
+    } else {
+      return 'Invalid Date'
+      // not a date object
+    }
+}

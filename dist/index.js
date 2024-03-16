@@ -9,11 +9,14 @@ const router_1 = require("./routers/router");
 const telegram_1 = __importDefault(require("./telegram"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
+const host = 'https://ddfc-89-209-185-240.ngrok-free.app';
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static("public"));
-app.use(telegram_1.default.webhookCallback('/secret-code/6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc'));
-telegram_1.default.telegram.setWebhook('https://fbdd-193-200-13-42.ngrok-free.app/secret-code/6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc');
+app.use(telegram_1.default.webhookCallback('secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg', {
+    secretToken: '6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg',
+}));
+telegram_1.default.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg');
 // bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc');
 app.use('/api', router_1.route);
 app.get('/', (_req, res) => {
@@ -22,7 +25,10 @@ app.get('/', (_req, res) => {
 app.get('/ping', (_req, res) => {
     return res.send('pong 🏓');
 });
+telegram_1.default.launch(() => console.log('Start bot'));
 app.listen(port, () => {
     return console.log(`Server is listening on ${port}`);
 });
+// process.once('SIGINT', () => bot.stop('SIGINT'))
+// process.once('SIGTERM', () => bot.stop('SIGTERM'))
 //# sourceMappingURL=index.js.map
