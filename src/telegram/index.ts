@@ -388,10 +388,12 @@ bot.on('callback_query', async (ctx: any) => {
   }
 
 })
+
+bot.launch(()=>console.log('Start new bot'));
+
 // ctx.reply('find ' + JSON.stringify('Найти не удалось', null, 4))     
 export default bot;
 
-bot.launch(()=>console.log('Start new bot'))
 
 //
 
