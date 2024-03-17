@@ -16,10 +16,10 @@ const headers = {
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static("public"));
-telegram_1.default.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs', {
-    certificate: './src/telegram/cert/crt.pem', // Path to your crt.pem
+telegram_1.default.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs', {
+    certificate: 'telegram/cert/crt.pem', // Path to your crt.pem
 });
-app.use(telegram_1.default.webhookCallback('secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
+app.use(telegram_1.default.webhookCallback('secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
 // bot.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs')
 app.use('/api', router_1.route);
 app.get('/', (_req, res) => {
