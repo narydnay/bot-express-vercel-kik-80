@@ -15,7 +15,7 @@ import bot from './telegram';
   app.use(express.static("public"));
 
   bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs',{
-    certificate: 'src/telegram/cert/crt.pem', // Path to your crt.pem
+    certificate: './src/telegram/cert/crt.pem', // Path to your crt.pem
   });
   app.use(bot.webhookCallback('secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
   
@@ -44,8 +44,8 @@ import bot from './telegram';
     return console.log(`Server is listening on ${port}`)
   })
 
-  // process.once('SIGINT', () => bot.stop('SIGINT'))
-  // process.once('SIGTERM', () => bot.stop('SIGTERM'))
+  process.once('SIGINT', () => bot.stop('SIGINT'))
+  process.once('SIGTERM', () => bot.stop('SIGTERM'))
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/setWebhook?url=https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs
 
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/getWebhookInfo
