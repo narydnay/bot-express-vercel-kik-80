@@ -42,9 +42,10 @@ import bot from './telegram';
 // },
 // ()=>console.log('Start bot'),
 // );
-  // app.listen(port, () => {      
-  //   return console.log(`Server is listening on ${port}`)
-  // })
+
+  app.listen(port, () => {      
+    return console.log(`Server is listening on ${port}`)
+  });
 
   process.once('SIGINT', () => bot.stop('SIGINT'))
   process.once('SIGTERM', () => bot.stop('SIGTERM'))

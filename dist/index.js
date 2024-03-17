@@ -37,9 +37,9 @@ app.get('/ping', (_req, res) => {
 // },
 // ()=>console.log('Start bot'),
 // );
-// app.listen(port, () => {      
-//   return console.log(`Server is listening on ${port}`)
-// })
+app.listen(port, () => {
+    return console.log(`Server is listening on ${port}`);
+});
 process.once('SIGINT', () => telegram_1.default.stop('SIGINT'));
 process.once('SIGTERM', () => telegram_1.default.stop('SIGTERM'));
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/setWebhook?url=https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs
