@@ -3,11 +3,10 @@ import multer from 'multer';
 import { parse } from 'csv-parse/sync';
 import {queryDataBasePostgress} from "../models/modelsPostgress";
 import {read} from 'xlsx';
-import { queryDataBaseFirebase } from "../models/modelsFirebase";
 
 export const uploadXls = async (req:Request, res: Response): Promise<Response> => {
   try {
-    const db = new queryDataBaseFirebase()
+    const db = new queryDataBasePostgress()
     const upload = multer().single('upload_xls');
     upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
@@ -21,10 +20,10 @@ export const uploadXls = async (req:Request, res: Response): Promise<Response> =
     } else {      
       try {
         const { file } = req;
-        // console.log({file})
+        console.log({file})
         if (Object.keys(file).length) {
           const { fieldname, originalname, encoding, mimetype, buffer, size } = file
-          const result = await db.setData(read(buffer).Sheets["Діюча"],'mybase');
+          const result = await db.setData(read(buffer).Sheets["Діюча"],'diucha');
           // return res.status(200).json({result})
           return res.status(200).json({
             info:{

@@ -1,3 +1,17 @@
+pgsql -h 193.0.61.232 -u admin -d kik -p 6432 -P'oSLxPwYigQkKZoNAacRRNTFX3HD69IO9SEFpJhE0wyzyhUAwDd'
+
+create table diucha(
+id serial,
+name text not null,
+full_age text,
+otd text,
+code_article text,
+period_punish text,
+image_url text,
+isGuard text
+);
+
+
 eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519_narydnay
 
 ngrok http http://localhost:7000

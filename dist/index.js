@@ -24,9 +24,19 @@ app.get('/ping', (_req, res) => {
     return res.send('pong 🏓');
 });
 telegram_1.default.launch(() => console.log('Start bot'));
+// bot.launch({
+//   webhook: {
+//     domain: '17b1-89-209-84-19.ngrok-free.app',
+//     hookPath: '/secret-code/6884974307:AAEN0vj63vJ0ntxRoVSiqSnupPg3S2h7ymc',
+//   },
+// },
+// ()=>console.log('Start bot'),
+// );
 app.listen(port, () => {
     return console.log(`Server is listening on ${port}`);
 });
 // process.once('SIGINT', () => bot.stop('SIGINT'))
 // process.once('SIGTERM', () => bot.stop('SIGTERM'))
+// https://api.telegram.org/bot6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg/setWebhook?url=https://bot-express-vercel-kik-80.vercel.app/secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg
+// https://api.telegram.org/bot6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg/getWebhookInfo
 //# sourceMappingURL=index.js.map
