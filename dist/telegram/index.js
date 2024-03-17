@@ -402,6 +402,7 @@ bot.on('callback_query', (ctx) => __awaiter(void 0, void 0, void 0, function* ()
 }));
 // ctx.reply('find ' + JSON.stringify('Найти не удалось', null, 4))     
 exports.default = bot;
+bot.launch(() => console.log('Start new bot'));
 //
 //   "isGuard": true,
 /**
