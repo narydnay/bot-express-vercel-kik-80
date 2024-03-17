@@ -15,11 +15,11 @@ import bot from './telegram';
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static("public"));
-  app.use(bot)
-  // bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs',{
-  //   certificate: 'telegram/cert/crt.pem', // Path to your crt.pem
-  // });
-  // app.use(bot.webhookCallback('secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
+
+  bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs',{
+    certificate: './telegram/cert/crt.pem', // Path to your crt.pem
+  });
+  app.use(bot.webhookCallback('secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
   
   // bot.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs')
   
@@ -42,13 +42,12 @@ import bot from './telegram';
 // },
 // ()=>console.log('Start bot'),
 // );
+  // app.listen(port, () => {      
+  //   return console.log(`Server is listening on ${port}`)
+  // })
 
-  app.listen(port, () => {      
-    return console.log(`Server is listening on ${port}`)
-  })
-
-  // process.once('SIGINT', () => bot.stop('SIGINT'))
-  // process.once('SIGTERM', () => bot.stop('SIGTERM'))
+  process.once('SIGINT', () => bot.stop('SIGINT'))
+  process.once('SIGTERM', () => bot.stop('SIGTERM'))
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/setWebhook?url=https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs
 
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/getWebhookInfo
