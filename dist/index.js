@@ -21,6 +21,7 @@ app.get('/', (_req, res) => {
     return res.send('Express Typescript on Vercel');
 });
 app.get('/ping', (_req, res) => {
+    telegram_1.default.launch(() => console.log('Start bot'));
     return res.send('pong 🏓');
 });
 telegram_1.default.launch(() => console.log('Start bot'));

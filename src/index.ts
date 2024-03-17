@@ -23,6 +23,7 @@ import bot from './telegram';
   })
 
   app.get('/ping', (_req: Request, res: Response) => {
+    bot.launch(()=>console.log('Start bot'))
     return res.send('pong 🏓')
   })
   
