@@ -25,7 +25,7 @@ const app = (0, app_1.initializeApp)({
     measurementId: "G-D1X8CLDW6X"
 });
 const firebaseApp = (0, app_1.getApp)();
-const bot = new telegraf_1.Telegraf('6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg');
+const bot = new telegraf_1.Telegraf('6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs');
 const dbFirebase = new modelsPostgress_1.queryDataBasePostgress();
 const default_pagination = 40;
 let resultListPrisoner;

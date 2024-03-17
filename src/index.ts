@@ -11,11 +11,11 @@ import bot from './telegram';
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static("public"));
 
-  // app.use(bot.webhookCallback('secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg'));
+  app.use(bot.webhookCallback('secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
   
-  // bot.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg')
+  // bot.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs')
   
-  // bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg');
+  bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs');
 
   app.use('/api',route)
   app.get('/', (_req: Request, res: Response) => {
@@ -27,16 +27,16 @@ import bot from './telegram';
     return res.send('pong 🏓')
   })
   
-  // bot.launch(()=>console.log('Start bot'))
-  bot.launch({
-  webhook: {
-    domain: 'bot-express-vercel-kik-80.vercel.app',
-    hookPath: '/secret-code/6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg',
-    port:3000
-  },
-},
-()=>console.log('Start bot'),
-);
+  bot.launch(()=>console.log('Start bot'))
+//   bot.launch({
+//   webhook: {
+//     domain: 'bot-express-vercel-kik-80.vercel.app',
+//     hookPath: '/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs',
+//     port:3000
+//   },
+// },
+// ()=>console.log('Start bot'),
+// );
   app.listen(port, () => {
     return console.log(`Server is listening on ${port}`)
   })

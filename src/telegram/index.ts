@@ -16,7 +16,7 @@ const app = initializeApp({
 });
 const firebaseApp = getApp();
 
-const bot: any = new Telegraf('6884974307:AAEXO7AVmAtsoB4QHXjYuLPKqpPzs__VeSg');
+const bot: any = new Telegraf('6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs');
 const dbFirebase = new queryDataBasePostgress();
 const default_pagination: number = 40;
 
