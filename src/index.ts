@@ -26,8 +26,7 @@ import bot from './telegram';
     bot.launch(()=>console.log('Start bot'))
     return res.send('pong 🏓')
   })
-  
-  bot.launch(()=>console.log('Start bot'))
+
 //   bot.launch({
 //   webhook: {
 //     domain: 'bot-express-vercel-kik-80.vercel.app',
@@ -37,7 +36,8 @@ import bot from './telegram';
 // },
 // ()=>console.log('Start bot'),
 // );
-  app.listen(port, () => {
+  app.listen(port, () => {      
+  bot.launch(()=>console.log('Start bot'))
     return console.log(`Server is listening on ${port}`)
   })
 

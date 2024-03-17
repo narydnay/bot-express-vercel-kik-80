@@ -24,7 +24,6 @@ app.get('/ping', (_req, res) => {
     telegram_1.default.launch(() => console.log('Start bot'));
     return res.send('pong 🏓');
 });
-telegram_1.default.launch(() => console.log('Start bot'));
 //   bot.launch({
 //   webhook: {
 //     domain: 'bot-express-vercel-kik-80.vercel.app',
@@ -35,6 +34,7 @@ telegram_1.default.launch(() => console.log('Start bot'));
 // ()=>console.log('Start bot'),
 // );
 app.listen(port, () => {
+    telegram_1.default.launch(() => console.log('Start bot'));
     return console.log(`Server is listening on ${port}`);
 });
 // process.once('SIGINT', () => bot.stop('SIGINT'))
