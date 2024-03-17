@@ -17,10 +17,9 @@ const multer_1 = __importDefault(require("multer"));
 const sync_1 = require("csv-parse/sync");
 const modelsPostgress_1 = require("../models/modelsPostgress");
 const xlsx_1 = require("xlsx");
-const modelsFirebase_1 = require("../models/modelsFirebase");
 const uploadXls = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const db = new modelsFirebase_1.queryDataBaseFirebase();
+        const db = new modelsPostgress_1.queryDataBasePostgress();
         const upload = (0, multer_1.default)().single('upload_xls');
         upload(req, res, function (err) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -36,10 +35,10 @@ const uploadXls = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 else {
                     try {
                         const { file } = req;
-                        // console.log({file})
+                        console.log({ file });
                         if (Object.keys(file).length) {
                             const { fieldname, originalname, encoding, mimetype, buffer, size } = file;
-                            const result = yield db.setData((0, xlsx_1.read)(buffer).Sheets["Діюча"], 'mybase');
+                            const result = yield db.setData((0, xlsx_1.read)(buffer).Sheets["Діюча"], 'diucha');
                             // return res.status(200).json({result})
                             return res.status(200).json({
                                 info: {

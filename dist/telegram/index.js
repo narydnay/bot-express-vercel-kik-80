@@ -166,7 +166,7 @@ bot.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     else if (message.text.toUpperCase().includes('срок'.toUpperCase())) {
         try {
             ctx.sendMessage('Получаем данные по ' + message.text);
-            fullListPrisoners = yield dbFirebase.getData({ nameField: 'name', qOperant: '!=', value: false });
+            fullListPrisoners = yield dbFirebase.getData();
             const value_find = message.text.replace('срок ', '');
             console.log({ value_find });
             const resultOtd = fullListPrisoners.filter((el) => el === null || el === void 0 ? void 0 : el.period_punish.includes(value_find));
@@ -193,7 +193,7 @@ bot.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     else if (message.text === 'список') {
         try {
             ctx.sendMessage('Пошук...');
-            fullListPrisoners = yield dbFirebase.getData({ nameField: 'name', qOperant: '!=', value: false }); //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
+            fullListPrisoners = yield dbFirebase.getData(); //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
             allPaginationPage = Math.ceil(fullListPrisoners.length / default_pagination);
             from_current_pagination = 0;
             to_current_pagination = default_pagination;
@@ -210,7 +210,7 @@ bot.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     else if (['1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12', '130', '131', '14', '15', '16', '17', 'КДіР', 'ДСР', 'ДОВ'].includes(message.text)) {
-        fullListPrisoners = yield dbFirebase.getData({ nameField: 'name', qOperant: '!=', value: false });
+        fullListPrisoners = yield dbFirebase.getData();
         try {
             ctx.sendMessage('Получаем данные по ' + message.text);
             const resultOtd = fullListPrisoners.filter((el) => (el === null || el === void 0 ? void 0 : el.otd) === message.text);
@@ -237,7 +237,7 @@ bot.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     else {
         try {
             ctx.sendMessage('Пошук по _*' + message.text.toUpperCase() + '*_ ', { parse_mode: "MarkdownV2" });
-            fullListPrisoners = yield dbFirebase.getData({ nameField: 'name', qOperant: '!=', value: false }); //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
+            fullListPrisoners = yield dbFirebase.getData(); //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
             if (message.text.toUpperCase().includes('?')) {
                 fullListPrisoners = (0, utils_tg_1.matchNamesSpecifics)(message.text, 'name', fullListPrisoners);
             }
@@ -343,11 +343,11 @@ bot.on('callback_query', (ctx) => __awaiter(void 0, void 0, void 0, function* ()
                     let spaceRefPhoto = '';
                     let linkPhoto = '';
                     try {
-                        spaceRefPhoto = (0, storage_1.ref)(storage, `/face_photo/${fullName} {${fullDate}} f.jpg`);
+                        spaceRefPhoto = (0, storage_1.ref)(storage, `/face_photo/${fullName} {${new Date(fullDate).toLocaleDateString("tr-TR")}} f.jpg`);
                         linkPhoto = yield (0, storage_1.getDownloadURL)(spaceRefPhoto);
                     }
                     catch (error) {
-                        spaceRefPhoto = (0, storage_1.ref)(storage, `/face_photo/${fullName} {${fullDate}} f.JPG`);
+                        spaceRefPhoto = (0, storage_1.ref)(storage, `/face_photo/${fullName} {${new Date(fullDate).toLocaleDateString("tr-TR")}} f.JPG`);
                         linkPhoto = yield (0, storage_1.getDownloadURL)(spaceRefPhoto);
                     }
                     ctx.sendPhoto(linkPhoto);
@@ -368,12 +368,13 @@ bot.on('callback_query', (ctx) => __awaiter(void 0, void 0, void 0, function* ()
                     const storage = (0, storage_1.getStorage)(firebaseApp, "gs://t-b-kik-80.appspot.com");
                     let spaceRef = '';
                     let link = '';
+                    console.log({ fullDate: new Date(fullDate).toLocaleDateString("tr-TR") });
                     try {
-                        spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${fullDate}}.JPG`);
+                        spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${new Date(fullDate).toLocaleDateString("tr-TR")}}.JPG`);
                         link = yield (0, storage_1.getDownloadURL)(spaceRef);
                     }
                     catch (error) {
-                        spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${fullDate}}.jpg`);
+                        spaceRef = (0, storage_1.ref)(storage, `/cards_prisoner/${fullName} {${new Date(fullDate).toLocaleDateString("tr-TR")}}.jpg`);
                         link = yield (0, storage_1.getDownloadURL)(spaceRef);
                     }
                     ctx.sendPhoto(link, {

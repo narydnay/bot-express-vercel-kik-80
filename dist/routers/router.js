@@ -13,12 +13,12 @@ exports.route = void 0;
 const express_1 = require("express");
 const upload_1 = require("../controllers/upload");
 const adminCustom_1 = require("../controllers/adminCustom");
-const modelsFirebase_1 = require("../models/modelsFirebase");
+const modelsPostgress_1 = require("../models/modelsPostgress");
 exports.route = (0, express_1.Router)();
 exports.route.get('/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const db = new modelsFirebase_1.queryDataBaseFirebase();
-        const result = yield db.getData({ nameDb: "Діюча" });
+        const db = new modelsPostgress_1.queryDataBasePostgress();
+        const result = yield db.getData();
         res.status(200).json({ message: 'send message success!', res: JSON.stringify(result, null, 4) });
     }
     catch (error) {
