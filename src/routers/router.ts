@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { uploadCsv, uploadXls } from "../controllers/upload";
 import { adminCustom } from "../controllers/adminCustom";
 import { queryDataBasePostgress } from "../models/modelsPostgress";
+import { adminAccess, adminUsers } from "../controllers/adminUsers";
 
 export const route = Router();
 
@@ -20,5 +21,7 @@ route.get('/test', async (req:Request, res:Response) => {
 
 route
 .get('/kik-admin', adminCustom)
+  .get('/kik-admin/users', adminUsers)
+  .put('/kik-admin/users-access',adminAccess)
 .post('/upload-csv', uploadCsv)
 .post('/upload-xls', uploadXls)

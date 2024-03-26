@@ -2,8 +2,10 @@ import { Telegraf } from "telegraf";
 import {queryDataBasePostgress} from "../models/modelsPostgress";
 import { showButtonsPagination } from "../helpers/helper";
 import { getApp, initializeApp } from "firebase/app";
-import { matchNames, matchNamesSpecifics } from "./utils-tg";
+import { addNameToDb, changeDataDbUser, checkUserDb, matchNames, matchNamesSpecifics } from "./utils-tg";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import dotenv from 'dotenv'; 
+dotenv.config();  // Load environment variables from .env file 
 
 const app = initializeApp({
   apiKey: "AIzaSyDArYuP8lbb94JbErr6Y3xKwQS2oPE_zTc",
@@ -15,9 +17,10 @@ const app = initializeApp({
   measurementId: "G-D1X8CLDW6X"
 });
 const firebaseApp = getApp();
-
-const bot: any = new Telegraf('6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs');
-const dbFirebase = new queryDataBasePostgress();
+const TOKEN = (process.env.TELEGRAM_TOKEN).toString();
+const bot: any = new Telegraf(TOKEN);
+// const bot: any = new Telegraf('6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs');
+const db = new queryDataBasePostgress();
 const default_pagination: number = 40;
 
 let resultListPrisoner: [];
@@ -27,105 +30,21 @@ let page: number = 1;
 let to_current_pagination: number = default_pagination;
 let from_current_pagination: number = 0;
 
-bot.start((ctx: any) => {
+bot.start( async (ctx: any) => {
+  const id_User = ctx.update.message.chat.id;
+  const first_name = ctx.update.message.chat.first_name;
+  const last_name = ctx.update.message.chat.last_name;
+  const surname = ctx.update.message.chat.surname;
+  const username = ctx.update.message.chat.username;
+  const resChecking = await checkUserDb(id_User,
+    first_name,
+    last_name,
+    surname,
+    username,
+    db,);
   console.log({ ctx: 'start observer' })
-  const options: {} = {
-    reply_markup: {
-      keyboard: [
-        [
-          {
-            text: 'Як користуватися',
-          },
-          {
-            text: 'Страйовка',
-            callback_data: "stroyvka"
-          },
-          {
-            text: '❌ Сховати меню',
-            selective: false
-          },
-        ],
-        [
-          {
-            text: '1',
-          },
-          {
-            text: '2',
-          },
-          {
-            text: '3',
-          },
-          {
-            text: '5',
-          },
-          {
-            text: '6',
-          },
-        ],
-        [
-          {
-            text: '7',
-          },
-          {
-            text: '8',
-          },
-          {
-            text: '9',
-          },
-          {
-            text: '10',
-          },
-          {
-            text: '11',
-          },
-        ],
-        [
-          {
-            text: '12',
-          },
-          {
-            text: '130',
-          },
-          {
-            text: '131',
-          },
-          {
-            text: '14',
-          },
-          {
-            text: '15',
-          },
-        ],
-        [
-          {
-            text: '16',
-          },
-          {
-            text: '17',
-          },
-          {
-            text: 'КДіР',
-          },
-          {
-            text: 'ДСР',
-          },
-          {
-            text: 'ДОВ',
-            // request_poll: {type: 'regular'} //создание формы опроса или сам опрос
-
-          },
-        ],
-      ],
-      input_field_placeholder: 'напишіть команду або виберіть пункт у меню',
-      is_persistent: false,
-      one_time_keyboard: true,
-      selective: false,// true - спрятана правая кнопка меню
-      resize_keyboard: true,//маленький размер кнопок
-      remove_keyboard: false
-    }
-  }
-  ctx.reply("Багато цікавого у нижньому меню. 👇🏼", options)
-  // ctx.ReplyKeyboardMarkup()
+  await ctx.sendMessage(`Для того щоб скористатися сервісом необхідно зареєструватися`);
+  await ctx.sendMessage(`Введіть Ваше прізвище`);
   return
 })
 
@@ -135,8 +54,67 @@ bot.on('chat_shared', (ctx: any) => {
 
 bot.on('text', async (ctx: any) => {
   const { message } = ctx;  
+  const id_User = ctx.update.message.chat.id;
+  const first_name = ctx.update.message.chat.first_name;
+  const last_name = ctx.update.message.chat.last_name;
+  const surname = ctx.update.message.chat.surname;
+  const username = ctx.update.message.chat.username;
 
+  const resChecking = await checkUserDb(id_User,
+    first_name,
+    last_name,
+    surname,
+    username,
+    db,);
+  // console.log({resChecking})
+  // console.log(resChecking.results[0]) 
+  // Введіть Ваше прізвище
+  if(!resChecking.info.status && !resChecking.count){
+    // need registration
+    await ctx.sendMessage(`Для того щоб скористатися сервісом необхідно зареєструватися` );
+    await ctx.sendMessage(`Введіть Ваше прізвище`);
+    return
+  }else{
+    if(resChecking.count && !resChecking.results[0].is_active && resChecking.results[0].is_blocked){
+      return ctx.sendMessage('Ви були заблоковані, щоб поновити роботу, зв\'яжіться з адміністратором https://t.me/narydnay_admin')
+    }
+    if(resChecking.count && !resChecking.results[0].is_active){ //
+      // console.log(resChecking.results[0])
+      if(message.text){
+        const options: {} = {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'так',
+                  callback_data: 'registration_yes'
+                },
+                {
+                  text: 'ні',
+                  callback_data: 'registration_no'
+                },
+              ]
+            ],            
+          },
+          parse_mode: "MarkdownV2",
+        }
+        return await ctx.sendMessage('ім\'я для реєстрації\\. __*' + message.text + '*__',options)
+      }
+      // await ctx.sendMessage(`Для того щоб скористатися сервісом необхідно зареєструватися` );
+      const options: {} = {
+      }
+      await ctx.reply(`Знову раді вас бачити, але ви досі не реєструвалися, зайдіть в меню і виберіть пункт "Реєстрація"`, options)
+      // await ctx.sendMessage();      
+      return 
+    }
+  }
 
+  if(message.text === 'a'){
+    // console.log({ ctx: ctx.update })
+    // console.log({ ctx: ctx.update.message.chat })    
+    ctx.sendMessage('hi bro ' + id_User)
+
+  }
 
   if (message.text.toUpperCase() === 'Як користуватися'.toUpperCase() || message.text.toUpperCase() === 'h'.toUpperCase()) {
     try {
@@ -164,7 +142,7 @@ bot.on('text', async (ctx: any) => {
   } else if(message.text.toUpperCase().includes('срок'.toUpperCase())){
     try {
       ctx.sendMessage('Получаем данные по ' + message.text);
-      fullListPrisoners = await dbFirebase.getData()
+      fullListPrisoners = await db.getData()
       const value_find = message.text.replace('срок ','');
       console.log({value_find})
       const resultOtd = fullListPrisoners.filter((el: any) => el?.period_punish.includes(value_find));
@@ -189,7 +167,7 @@ bot.on('text', async (ctx: any) => {
   } else if (message.text === 'список') {
     try {
       ctx.sendMessage('Пошук...')
-      fullListPrisoners = await dbFirebase.getData() //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
+      fullListPrisoners = await db.getData() //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
       allPaginationPage = Math.ceil(fullListPrisoners.length / default_pagination);
       from_current_pagination = 0;
       to_current_pagination = default_pagination;
@@ -205,7 +183,7 @@ bot.on('text', async (ctx: any) => {
       return ctx.sendMessage('ERROR? ...\n' + JSON.stringify(err, null, 4))
     }
   } else if (['1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12', '130', '131', '14', '15', '16', '17', 'КДіР', 'ДСР', 'ДОВ'].includes(message.text)) {
-    fullListPrisoners = await dbFirebase.getData()
+    fullListPrisoners = await db.getData()
     try {
       ctx.sendMessage('Получаем данные по ' + message.text)
       const resultOtd = fullListPrisoners.filter((el: any) => el?.otd === message.text);
@@ -230,7 +208,7 @@ bot.on('text', async (ctx: any) => {
   } else {
     try {
       ctx.sendMessage('Пошук по _*' + message.text.toUpperCase() + '*_ ', { parse_mode: "MarkdownV2" })
-      fullListPrisoners = await dbFirebase.getData() //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
+      fullListPrisoners = await db.getData() //getDataFromDb({nameField: 'name', qOperant: '!=', value:false});
       if (message.text.toUpperCase().includes('?')) {
         fullListPrisoners = matchNamesSpecifics(message.text, 'name', fullListPrisoners)
       } else {
@@ -256,6 +234,17 @@ bot.on('text', async (ctx: any) => {
 bot.on('callback_query', async (ctx: any) => {
   const name: any = ctx.update.callback_query
   try {
+    if(name.data === 'registration_yes'){
+      const nameUserReg = ctx.update.callback_query.message.text.split('. ').pop()
+      const id = ctx.update.callback_query.from.id;
+      const res = await changeDataDbUser({custom_name: nameUserReg, id_telegram: id, db})
+      await ctx.sendMessage(`Ласкаво просимо до нашої системи ${nameUserReg}.\n Зробіть запит.` );
+      return
+    }
+    if(name.data === 'registration_no'){
+      await ctx.sendMessage(`Введіть Ваше прізвище`);
+      return
+    }
     if (name.data === 'match_info') {
       // await ctx.sendMessage(`*__страйовка__*     покажет актуальную страёвку`, { parse_mode: "MarkdownV2", });
       await ctx.sendMessage(`*__список__*        покажет весь список с пагинацией в лагере`, { parse_mode: "MarkdownV2", });
@@ -384,7 +373,7 @@ bot.on('callback_query', async (ctx: any) => {
       }
     }
   } catch (error) {
-    ctx.sendMessage('За вашим запитом знайдено 0')
+    ctx.sendMessage('За вашим запитом знайдено 0' + error.message)
   }
 
 })

@@ -5,13 +5,13 @@ const showButtonsPagination = (ctx, resultListPrisoner, page, from_current_pagin
     let pagination = [];
     if (+page === +allPaginationPage && allPaginationPage >= 2) {
         pagination = [
-            { text: 'в начало', callback_data: 'next' }
+            { text: 'з початоку', callback_data: 'next' }
         ];
     }
     else if (allPaginationPage >= 2) {
         pagination = [
             // {text: 'пред',callback_data: 'back'},
-            { text: 'след', callback_data: 'next' }
+            { text: 'наступна', callback_data: 'next' }
         ];
     }
     return ctx.reply(resultListPrisoner.length ? `Перелiк запиту сторiнка ${page} iз ${allPaginationPage}` : `Знайдено 0 карток`, {

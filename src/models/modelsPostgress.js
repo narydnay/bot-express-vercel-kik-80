@@ -14,7 +14,6 @@ class queryDataBasePostgress {
   client = pool.connect();
   async setData(data, nameDb){
     try {
-
       let initDataObject = {
         name: '',
         full_age: '',
@@ -22,11 +21,7 @@ class queryDataBasePostgress {
         code_article: '',
         period_punish: '',
       }
-      let listData = [];
-      let currentData = {}
       let dataObject = {};
-      let resultSend = 'send'
-
       for (let i = 4; i < 9999; i++) {
         dataObject = initDataObject;
         for (let key of Object.keys(data)) {
@@ -98,8 +93,7 @@ class queryDataBasePostgress {
          }
         }
         currentData = {};
-      }
-      
+      }    
 
       return {
         info:{
@@ -112,21 +106,53 @@ class queryDataBasePostgress {
     } // 
   }
 
-  async getData(){
+  async setDataDb( table, data ){ 
+    try {      
+      const keys = Object.keys(data).join(',');
+      const amountItems = `${Object.values(data).map((el,i)=>`$${i+1}`)}`
+      const sql = `INSERT INTO ${table} (${keys}) VALUES(${amountItems});`;
+      const values = Object.values(data)
+      await pool.query(sql,values);
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getData(table = 'diucha', query = '*', where = '', order_by = ''){
     try {
-      const result = await pool.query('SELECT * from diucha;')
+      let sql = `SELECT ${query} from ${table}`
+      if(where){
+        sql = sql + ` WHERE (${where})`
+      }
+      if(order_by){
+        sql = sql + ` ORDER BY (${order_by})`
+      }
+      sql = sql + ';';
+      // console.log({sql})
+      const result = await pool.query(sql)
       return result.rows;
     } catch (error) {
       throw error;
     }
   }
-
+  
   deleteData(){
-
+    // DELETE FROM table_name WHERE condition RETURNING (select_list | *)
   }
-
-  putData(){
-
+  
+  async putData(table, where='', data='', returning=''){
+    
+    try {
+      let sql = `UPDATE ${table} SET ${data} WHERE ${where};`;
+      if(returning){
+        sql = `UPDATE ${table} SET ${data} WHERE ${where} RETURNING ${returning} ;`;
+      }
+      console.log({sql})
+      const result = await pool.query(sql)
+      return result?.rows;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

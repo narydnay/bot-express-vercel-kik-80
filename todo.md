@@ -1,4 +1,4 @@
-pgsql -h 193.0.61.232 -u admin -d kik -p 6432 -P'oSLxPwYigQkKZoNAacRRNTFX3HD69IO9SEFpJhE0wyzyhUAwDd'
+psql -h 193.0.61.232 -U admin -d kik -p 6432 -P'oSLxPwYigQkKZoNAacRRNTFX3HD69IO9SEFpJhE0wyzyhUAwDd'
 
 create table diucha(
 id serial,

@@ -14,6 +14,7 @@ const express_1 = require("express");
 const upload_1 = require("../controllers/upload");
 const adminCustom_1 = require("../controllers/adminCustom");
 const modelsPostgress_1 = require("../models/modelsPostgress");
+const adminUsers_1 = require("../controllers/adminUsers");
 exports.route = (0, express_1.Router)();
 exports.route.get('/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -27,6 +28,8 @@ exports.route.get('/test', (req, res) => __awaiter(void 0, void 0, void 0, funct
 }));
 exports.route
     .get('/kik-admin', adminCustom_1.adminCustom)
+    .get('/kik-admin/users', adminUsers_1.adminUsers)
+    .put('/kik-admin/users-access', adminUsers_1.adminAccess)
     .post('/upload-csv', upload_1.uploadCsv)
     .post('/upload-xls', upload_1.uploadXls);
 //# sourceMappingURL=router.js.map

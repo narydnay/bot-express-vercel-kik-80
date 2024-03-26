@@ -1,28 +1,34 @@
 import express, { Request, Response } from 'express';
 import bodyParser from "body-parser";
+import cors from 'cors';
 import { route } from './routers/router'
+import dotenv from 'dotenv'; 
 import bot from './telegram';
 
 
+  dotenv.config();  // Load environment variables from .env file 
   const app = express()
-  const port = process.env.PORT || 3000
+  const port = process.env.PORT || 7000
 
-  const host= 'https://ddfc-89-209-185-240.ngrok-free.app'
+  const host= process.env ? 'https://ddfc-89-209-185-240.ngrok-free.app' : '';
   const headers = {
     'X-Telegram-Bot-Api-Secret-Token': '6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'
   }
-
+  app.use(cors())
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static("public"));
 
-  bot.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs',{
-    certificate: './telegram/cert/crt.pem', // Path to your crt.pem
+  console.log(process.env.TELEGRAM_TOKEN)
+  const setWebHookToken = `https://bot-express-vercel-kik-80.vercel.app/secret-code/bot${process.env.TELEGRAM_TOKEN}`;
+  const webhookCallbackToken = `secret-code/bot${process.env.TELEGRAM_TOKEN}`
+  
+  bot.telegram.setWebhook(setWebHookToken,{
+    // certificate: './telegram/cert/crt.pem', // Path to your crt.pem
   });
-  app.use(bot.webhookCallback('secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
+  app.use(bot.webhookCallback(webhookCallbackToken));
   
-  // bot.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs')
-  
+ 
   
   app.use('/api',route)
   app.get('/', (_req: Request, res: Response) => {
@@ -47,8 +53,8 @@ import bot from './telegram';
     return console.log(`Server is listening on ${port}`)
   });
 
-  process.once('SIGINT', () => bot.stop('SIGINT'))
-  process.once('SIGTERM', () => bot.stop('SIGTERM'))
+  // process.once('SIGINT', () => bot.stop('SIGINT'))
+  // process.once('SIGTERM', () => bot.stop('SIGTERM'))
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/setWebhook?url=https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs
 
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/getWebhookInfo

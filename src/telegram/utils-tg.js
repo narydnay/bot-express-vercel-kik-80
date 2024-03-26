@@ -42,3 +42,63 @@ let resQueryName = listNames.filter( el => {
   });
   return resQueryName;
 }
+
+export async function checkUserDb(
+  id, 
+  first_name, 
+  last_name, 
+  surname, 
+  username, 
+  db
+){
+  let status = false;
+  let res = null;
+  res = await db.getData('users', '*', `id_telegram = ${id}`)
+  // console.log({res})
+  if(res.length){
+    status = true;
+  }else{
+    addNameToDb('', id, first_name, last_name, surname, username, db);
+  }
+  return {
+    info: {
+      status,
+      message: 'checkUserDb'
+    },
+    count: res.length,
+    results: res,
+  }
+}
+
+export async function addNameToDb(name, id, first_name, last_name, surname, username, db) {
+  try {    
+    let obj = {
+      id_telegram: id,
+      first_name: first_name,
+      last_name: last_name,
+      surname: surname,
+      username: username,
+      date_create: new Date(),
+    }
+    if(name) obj = {...obj,custom_name: name}   
+    const res = await db.setDataDb('users', obj);
+  } catch (error) {
+    
+  }
+}
+
+export async function changeDataDbUser({custom_name, id_telegram, db}){
+  try { // putData(table, where, data)
+    console.log({custom_name, id_telegram})
+    const res = await db.putData(
+      'users', 
+      `id_telegram = ${id_telegram}`,
+      `custom_name = '` + custom_name + `', is_active = true`,  
+      )
+      //custom_name = 'test', is_active = true
+    return res;
+  } catch (error) {
+    console.log({error})
+    throw error;
+  }
+}

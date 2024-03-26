@@ -33,10 +33,7 @@ class queryDataBasePostgress {
                     code_article: '',
                     period_punish: '',
                 };
-                let listData = [];
-                let currentData = {};
                 let dataObject = {};
-                let resultSend = 'send';
                 for (let i = 4; i < 9999; i++) {
                     dataObject = initDataObject;
                     for (let key of Object.keys(data)) {
@@ -106,10 +103,33 @@ class queryDataBasePostgress {
             } // 
         });
     }
-    getData() {
+    setDataDb(table, data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield pool.query('SELECT * from diucha;');
+                const keys = Object.keys(data).join(',');
+                const amountItems = `${Object.values(data).map((el, i) => `$${i + 1}`)}`;
+                const sql = `INSERT INTO ${table} (${keys}) VALUES(${amountItems});`;
+                const values = Object.values(data);
+                yield pool.query(sql, values);
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    getData() {
+        return __awaiter(this, arguments, void 0, function* (table = 'diucha', query = '*', where = '', order_by = '') {
+            try {
+                let sql = `SELECT ${query} from ${table}`;
+                if (where) {
+                    sql = sql + ` WHERE (${where})`;
+                }
+                if (order_by) {
+                    sql = sql + ` ORDER BY (${order_by})`;
+                }
+                sql = sql + ';';
+                // console.log({sql})
+                const result = yield pool.query(sql);
                 return result.rows;
             }
             catch (error) {
@@ -118,8 +138,23 @@ class queryDataBasePostgress {
         });
     }
     deleteData() {
+        // DELETE FROM table_name WHERE condition RETURNING (select_list | *)
     }
-    putData() {
+    putData(table_1) {
+        return __awaiter(this, arguments, void 0, function* (table, where = '', data = '', returning = '') {
+            try {
+                let sql = `UPDATE ${table} SET ${data} WHERE ${where};`;
+                if (returning) {
+                    sql = `UPDATE ${table} SET ${data} WHERE ${where} RETURNING ${returning} ;`;
+                }
+                console.log({ sql });
+                const result = yield pool.query(sql);
+                return result === null || result === void 0 ? void 0 : result.rows;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
     }
 }
 exports.queryDataBasePostgress = queryDataBasePostgress;

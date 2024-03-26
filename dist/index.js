@@ -5,22 +5,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const cors_1 = __importDefault(require("cors"));
 const router_1 = require("./routers/router");
+const dotenv_1 = __importDefault(require("dotenv"));
 const telegram_1 = __importDefault(require("./telegram"));
+dotenv_1.default.config(); // Load environment variables from .env file 
 const app = (0, express_1.default)();
-const port = process.env.PORT || 3000;
-const host = 'https://ddfc-89-209-185-240.ngrok-free.app';
+const port = process.env.PORT || 7000;
+const host = process.env ? 'https://ddfc-89-209-185-240.ngrok-free.app' : '';
 const headers = {
     'X-Telegram-Bot-Api-Secret-Token': '6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'
 };
+app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static("public"));
-telegram_1.default.telegram.setWebhook('https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs', {
-    certificate: './telegram/cert/crt.pem', // Path to your crt.pem
+console.log(process.env.TELEGRAM_TOKEN);
+const setWebHookToken = `https://bot-express-vercel-kik-80.vercel.app/secret-code/bot${process.env.TELEGRAM_TOKEN}`;
+const webhookCallbackToken = `secret-code/bot${process.env.TELEGRAM_TOKEN}`;
+telegram_1.default.telegram.setWebhook(setWebHookToken, {
+// certificate: './telegram/cert/crt.pem', // Path to your crt.pem
 });
-app.use(telegram_1.default.webhookCallback('secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs'));
-// bot.telegram.setWebhook('https://ddfc-89-209-185-240.ngrok-free.app/secret-code/6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs')
+app.use(telegram_1.default.webhookCallback(webhookCallbackToken));
 app.use('/api', router_1.route);
 app.get('/', (_req, res) => {
     return res.send('Express Typescript on Vercel');
@@ -40,8 +46,8 @@ app.get('/ping', (_req, res) => {
 app.listen(port, () => {
     return console.log(`Server is listening on ${port}`);
 });
-process.once('SIGINT', () => telegram_1.default.stop('SIGINT'));
-process.once('SIGTERM', () => telegram_1.default.stop('SIGTERM'));
+// process.once('SIGINT', () => bot.stop('SIGINT'))
+// process.once('SIGTERM', () => bot.stop('SIGTERM'))
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/setWebhook?url=https://bot-express-vercel-kik-80.vercel.app/secret-code/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs
 // https://api.telegram.org/bot6884974307:AAEhqlrw82pHm1C-kPqUeKjPK_zOp92Rrrs/getWebhookInfo
 //# sourceMappingURL=index.js.map
