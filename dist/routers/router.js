@@ -29,6 +29,7 @@ exports.route.get('/test', (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.route
     .get('/kik-admin', adminCustom_1.adminCustom)
     .get('/kik-admin/users', adminUsers_1.adminUsers)
+    .get('/kik-admin/user-profile', adminUsers_1.adminUserProfile)
     .put('/kik-admin/users-access', adminUsers_1.adminAccess)
     .post('/upload-csv', upload_1.uploadCsv)
     .post('/upload-xls', upload_1.uploadXls);

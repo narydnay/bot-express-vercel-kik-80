@@ -23,6 +23,7 @@ const uploadXls = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const upload = (0, multer_1.default)().single('upload_xls');
         upload(req, res, function (err) {
             return __awaiter(this, void 0, void 0, function* () {
+                // console.log({req})
                 if (err instanceof multer_1.default.MulterError) {
                     // Случилась ошибка Multer при загрузке.
                     return res.status(500).json({
@@ -35,14 +36,18 @@ const uploadXls = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 else {
                     try {
                         const { file } = req;
-                        console.log({ file });
+                        // console.log({file})
                         if (Object.keys(file).length) {
                             const { fieldname, originalname, encoding, mimetype, buffer, size } = file;
+                            // console.log(read(buffer).SheetNames)
+                            const listSheets = ["Діюча", "Виб", "Звіл",];
                             const result = yield db.setData((0, xlsx_1.read)(buffer).Sheets["Діюча"], 'diucha');
-                            // return res.status(200).json({result})
+                            // return res.status(200).json(read(buffer).Sheets["Діюча"])
+                            // return res.status(200).json(read(buffer).Sheets["Виб"])
+                            // return res.status(200).json(read(buffer).Sheets["Діюча"])
                             return res.status(200).json({
                                 info: {
-                                    message: 'Файл успішно завантажено.',
+                                    message: 'Файл успішно завантажено.' + result.info.message,
                                     status: true
                                 }
                             });

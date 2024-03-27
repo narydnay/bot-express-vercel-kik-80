@@ -9,6 +9,7 @@ export const uploadXls = async (req:Request, res: Response): Promise<Response> =
     const db = new queryDataBasePostgress()
     const upload = multer().single('upload_xls');
     upload(req, res, async function (err) {
+      // console.log({req})
       if (err instanceof multer.MulterError) {
         // Случилась ошибка Multer при загрузке.
         return res.status(500).json({
@@ -20,14 +21,18 @@ export const uploadXls = async (req:Request, res: Response): Promise<Response> =
     } else {      
       try {
         const { file } = req;
-        console.log({file})
+        // console.log({file})
         if (Object.keys(file).length) {
           const { fieldname, originalname, encoding, mimetype, buffer, size } = file
+          // console.log(read(buffer).SheetNames)
+          const listSheets = ["Діюча","Виб","Звіл",];
           const result = await db.setData(read(buffer).Sheets["Діюча"],'diucha');
-          // return res.status(200).json({result})
+          // return res.status(200).json(read(buffer).Sheets["Діюча"])
+          // return res.status(200).json(read(buffer).Sheets["Виб"])
+          // return res.status(200).json(read(buffer).Sheets["Діюча"])
           return res.status(200).json({
             info:{
-              message: 'Файл успішно завантажено.',
+              message: 'Файл успішно завантажено.' + result.info.message,
               status: true
             }
           })

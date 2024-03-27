@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { ExcelDateToJSDate } from '../helpers/helper';
+import { ExcelDateToJSDate, getAmountItemsDb, getKeysFromDb, getKeysUpdateFromDb, getValuesDb } from '../helpers/helper';
 
 const pool = new Pool({
   host: '193.0.61.232',
@@ -12,7 +12,7 @@ const pool = new Pool({
 
 class queryDataBasePostgress {
   client = pool.connect();
-  async setData(data, nameDb){
+  async setData(data, nameTableDb){
     try {
       let initDataObject = {
         name: '',
@@ -20,9 +20,17 @@ class queryDataBasePostgress {
         otd: '',
         code_article: '',
         period_punish: '',
+        isguard: '',
       }
       let dataObject = {};
+      const checkEntrySql = `SELECT * FROM ${nameTableDb};`;
+      const listCurrentEntry = (await pool.query(checkEntrySql)).rows;
+      // console.log({listCurrentEntry: listCurrentEntry})
+      let countWrite = 0;
+      let countUpdateWrite = 0;
+      let errorWar = [];
       for (let i = 4; i < 9999; i++) {
+        let notEntryIntoDb = true;
         dataObject = initDataObject;
         for (let key of Object.keys(data)) {
           if(data['E'+i] === undefined) break;
@@ -30,7 +38,7 @@ class queryDataBasePostgress {
             if(key.includes(i)){
               `//  П.І.Б. "name": "Єгоров Андрій Олексійович",`
               if('E'+i === key){
-                let full_name = data[key]['v'].trim().replace('  ', ' ')
+                let full_name = data[key]['v'].trim().replace('  ', ' ').replace('`', '\'').replace("'", '\'')
                 const pib = full_name.split(' ');
                 dataObject = {
                   ...dataObject,
@@ -66,38 +74,72 @@ class queryDataBasePostgress {
                   period_punish: data[key]['v']
                 }
               }
-              
+              //  Статус                              
+              if('CP'+i === key){
+                dataObject = {
+                  ...dataObject,
+                  isguard: data[key]['v']
+                }
+              }
             }
           }
         }
         if(dataObject?.name){
           try {
             //  заносим данные в бд
-            let options = {
-            };
-            // console.log('date = ', dataObject)
-            // console.log('date 1 = ', dataObject.full_age?.toLocaleDateString("tr-TR"))
-            // console.log({dataObject})
-          const subBase = dataObject?.name +' {' + dataObject?.full_age.toLocaleDateString("tr-TR", options) + '}'
-          console.log(`${i-3}`,{subBase})
-          const keys = Object.keys(dataObject).join(',');
-          const amountItems = `${Object.values(dataObject).map((el,i)=>`$${i+1}`)}`
-          const sql = `INSERT INTO ${nameDb} (${keys}) VALUES(${amountItems});`;
-          const values = Object.values(dataObject)
-          console.log({sql, values})
-          await pool.query(sql,values);
-          //  return true;
+
+            /**
+             * check the entry data into db'
+             * if true => change via popup 
+             * else add new row
+             * 
+             */
+            console.log('date 1 = ', dataObject.name)
+            for(let curEntry of listCurrentEntry){
+              if(curEntry.name === dataObject.name && new Date(curEntry.full_age).toISOString() === dataObject.full_age.toISOString()){
+                notEntryIntoDb = false;
+                // console.log('date_3 = ', curEntry.name === dataObject.name)
+                // console.log('date_4 = ', new Date(curEntry.full_age).toISOString() === dataObject.full_age.toISOString())
+                const setKeys = getKeysUpdateFromDb(dataObject);
+                const changeDataDbSql = `UPDATE ${nameTableDb} SET ${setKeys} WHERE name = '${dataObject.name.replace('\'', '\'\'')}' AND full_age::date = '${(dataObject.full_age).toISOString()}'`
+                const values = getValuesDb(dataObject);
+                countUpdateWrite = countUpdateWrite + 1
+                console.log('date 2 = ', changeDataDbSql, values)
+                try {
+                  await pool.query(changeDataDbSql, values);
+                  
+                } catch (error) {
+                  console.log(error)
+                  errorWar.push(error.message)
+                }
+            }            
+          }  
+          
+          if(notEntryIntoDb){
+            const keys = getKeysFromDb(dataObject);
+            const amountItems = getAmountItemsDb(dataObject);    
+            const values = getValuesDb(dataObject);
+            const sqlAddRow = `INSERT INTO ${nameTableDb} (${keys}) VALUES(${amountItems});`;              
+            // console.log({sqlAddRow, values})
+            countWrite = countWrite + 1;
+            await pool.query(sqlAddRow,values);
+          }
+          //  return true; 
          } catch (e) {
            console.error("Error adding document: ", e);
-           return false;
+           return {
+            info:{
+              message: 'Error додавання до бади данних' + e.message,
+              status: false
+            }
+          };
          }
         }
-        currentData = {};
-      }    
+      }
 
       return {
         info:{
-          message: 'ok, data add into db',
+          message: `З вкладки ${nameTableDb} було додано ${countWrite}, оновлено ${countUpdateWrite} записiв, помилок ${errorWar.length}, ${errorWar}`,
           status: true
         }
       }
@@ -128,7 +170,7 @@ class queryDataBasePostgress {
         sql = sql + ` ORDER BY (${order_by})`
       }
       sql = sql + ';';
-      // console.log({sql})
+      console.log({sql})
       const result = await pool.query(sql)
       return result.rows;
     } catch (error) {

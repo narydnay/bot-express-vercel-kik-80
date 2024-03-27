@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminAccess = exports.adminUsers = void 0;
+exports.adminAccess = exports.adminUserProfile = exports.adminUsers = void 0;
 const modelsPostgress_1 = require("../models/modelsPostgress");
 const adminUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const db = new modelsPostgress_1.queryDataBasePostgress();
@@ -31,10 +31,32 @@ const adminUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.adminUsers = adminUsers;
+const adminUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const db = new modelsPostgress_1.queryDataBasePostgress();
+    try {
+        console.log(req);
+        const { id_telegram } = req.query;
+        const where = `id_telegram = ${id_telegram}`;
+        const result = yield db.getData('users', '*', where);
+        return res.status(200).json({
+            info: {
+                status: true,
+                message: `Данные были получены для ${id_telegram}`
+            },
+            count: result.length,
+            results: result
+        });
+    }
+    catch (error) {
+        console.log(error);
+        throw error;
+    }
+});
+exports.adminUserProfile = adminUserProfile;
 const adminAccess = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const db = new modelsPostgress_1.queryDataBasePostgress();
     try {
-        // console.log(req)
+        console.log(req);
         const { is_active, id_telegram } = req.body;
         const where = `id_telegram = ${id_telegram}`;
         const data = `is_active = ${is_active}, is_blocked = ${!is_active}`;

@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/cors": "^2.8.17",
+    "@types/express-form-data": "^2.0.5",
     "@types/jest": "^29.5.12",
     "@types/multer": "^1.4.11",
     "@types/react": "^18.2.67",
@@ -29,6 +30,7 @@
     "csv-parse": "^5.5.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
+    "express-form-data": "^2.0.23",
     "firebase": "^10.8.1",
     "firebase-admin": "^12.0.0",
     "multer": "^1.4.5-lts.1",

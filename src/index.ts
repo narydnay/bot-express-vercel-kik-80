@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import cors from 'cors';
 import { route } from './routers/router'
 import dotenv from 'dotenv'; 
+import formdata from 'express-form-data';
 import bot from './telegram';
 
 
@@ -16,13 +17,16 @@ import bot from './telegram';
   }
   app.use(cors())
   app.use(bodyParser.json());
+  // app.use(bodyParser.urlencoded());
   app.use(bodyParser.urlencoded({extended: true}));
+  // app.use(formdata.parse())
   app.use(express.static("public"));
 
   console.log(process.env.TELEGRAM_TOKEN)
   const setWebHookToken = `https://bot-express-vercel-kik-80.vercel.app/secret-code/bot${process.env.TELEGRAM_TOKEN}`;
   const webhookCallbackToken = `secret-code/bot${process.env.TELEGRAM_TOKEN}`
   
+
   bot.telegram.setWebhook(setWebHookToken,{
     // certificate: './telegram/cert/crt.pem', // Path to your crt.pem
   });

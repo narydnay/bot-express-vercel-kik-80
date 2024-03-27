@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExcelDateToJSDate = exports.showButtonsPagination = void 0;
+exports.getKeysUpdateFromDb = exports.getValuesDb = exports.getAmountItemsDb = exports.getKeysFromDb = exports.ExcelDateToJSDate = exports.showButtonsPagination = void 0;
 const showButtonsPagination = (ctx, resultListPrisoner, page, from_current_pagination, to_current_pagination, allPaginationPage) => {
     let pagination = [];
     if (+page === +allPaginationPage && allPaginationPage >= 2) {
@@ -43,4 +43,26 @@ function ExcelDateToJSDate(date) {
     }
 }
 exports.ExcelDateToJSDate = ExcelDateToJSDate;
+function getKeysFromDb(data) {
+    return Object.keys(data).join(',');
+}
+exports.getKeysFromDb = getKeysFromDb;
+function getAmountItemsDb(data) {
+    return `${Object.values(data).map((el, i) => `$${i + 1}`)}`;
+}
+exports.getAmountItemsDb = getAmountItemsDb;
+function getValuesDb(data) {
+    return Object.values(data).map((el) => {
+        if (typeof el === 'string') {
+            return el;
+        }
+        return el;
+    });
+}
+exports.getValuesDb = getValuesDb;
+function getKeysUpdateFromDb(data) {
+    //` name = ($1), full_age = ${dataObject.full_age}, otd = ${dataObject.otd}, code_article = ${dataObject.code_article}, period_punish = ${dataObject.period_punish}, image_url = ${dataObject.image_url}, isguard = ${dataObject.isguard}, `
+    return Object.keys(data).map((el, i) => el + ` = $${i + 1}`).join(',');
+}
+exports.getKeysUpdateFromDb = getKeysUpdateFromDb;
 //# sourceMappingURL=helper.js.map

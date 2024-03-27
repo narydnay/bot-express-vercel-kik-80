@@ -1,3 +1,4 @@
+import e from "express";
 
 export const showButtonsPagination = (ctx: any, resultListPrisoner:[], page:number, from_current_pagination:number, to_current_pagination:number, allPaginationPage: number) => {
   let pagination: any = [];
@@ -36,3 +37,25 @@ export function ExcelDateToJSDate(date:any) {
       // not a date object
     }
 }
+
+export function getKeysFromDb (data: {}){
+  return Object.keys(data).join(',');
+}
+export function getAmountItemsDb (data: {}){
+  return `${Object.values(data).map((el,i)=>`$${i+1}`)}`;
+}
+export function getValuesDb (data: {}){
+  return Object.values(data).map((el:any)=> {
+    if(typeof el === 'string'){
+      return el
+    }
+    return el
+  })
+}
+
+export function getKeysUpdateFromDb (data: {}){
+  //` name = ($1), full_age = ${dataObject.full_age}, otd = ${dataObject.otd}, code_article = ${dataObject.code_article}, period_punish = ${dataObject.period_punish}, image_url = ${dataObject.image_url}, isguard = ${dataObject.isguard}, `
+  return Object.keys(data).map( (el: string,i: number) => el + ` = $${i+1}` ).join(',');
+}
+
+

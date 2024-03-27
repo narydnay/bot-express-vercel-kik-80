@@ -18,7 +18,9 @@ const headers = {
 };
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
+// app.use(bodyParser.urlencoded());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
+// app.use(formdata.parse())
 app.use(express_1.default.static("public"));
 console.log(process.env.TELEGRAM_TOKEN);
 const setWebHookToken = `https://bot-express-vercel-kik-80.vercel.app/secret-code/bot${process.env.TELEGRAM_TOKEN}`;
