@@ -18,12 +18,12 @@ import bot from './telegram';
 
   const allowCrossDomain = (req: Request, res: Response, next: NextFunction) => {
     res.header(`Access-Control-Allow-Origin`, `*`);
-    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
+    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE,PATCH,OPTIONS`);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   };
 
-  app.use(cors())
+  app.use(cors({credentials: true, origin: 'https://narydnay-admin.vercel.app'}))
   app.options('*', cors());
   app.use(allowCrossDomain)
   app.use(bodyParser.json());
@@ -36,13 +36,13 @@ import bot from './telegram';
   const setWebHookToken = `https://bot-express-vercel-kik-80.vercel.app/secret-code/bot${process.env.TELEGRAM_TOKEN}`;
   const webhookCallbackToken = `secret-code/bot${process.env.TELEGRAM_TOKEN}`
   
-  if(process.env.DEV !== 'developer'){
-    console.log('token telegram connect')
-    bot.telegram.setWebhook(setWebHookToken,{
-      // certificate: './telegram/cert/crt.pem', // Path to your crt.pem
-    });
-    app.use(bot.webhookCallback(webhookCallbackToken));
-  }
+  // if(process?.env?.DEV !== 'developer'){
+  //   console.log('token telegram connect')
+  //   bot.telegram.setWebhook(setWebHookToken,{
+  //     // certificate: './telegram/cert/crt.pem', // Path to your crt.pem
+  //   });
+  //   app.use(bot.webhookCallback(webhookCallbackToken));
+  // }
   
  
   

@@ -8,7 +8,6 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const router_1 = require("./routers/router");
 const dotenv_1 = __importDefault(require("dotenv"));
-const telegram_1 = __importDefault(require("./telegram"));
 dotenv_1.default.config(); // Load environment variables from .env file 
 const app = (0, express_1.default)();
 const port = process.env.PORT || 7000;
@@ -18,11 +17,11 @@ const headers = {
 };
 const allowCrossDomain = (req, res, next) => {
     res.header(`Access-Control-Allow-Origin`, `*`);
-    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
+    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE,PATCH,OPTIONS`);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 };
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ credentials: true, origin: 'https://narydnay-admin.vercel.app' }));
 app.options('*', (0, cors_1.default)());
 app.use(allowCrossDomain);
 app.use(body_parser_1.default.json());
@@ -33,13 +32,13 @@ app.use(express_1.default.static("public"));
 console.log(process.env.DEV);
 const setWebHookToken = `https://bot-express-vercel-kik-80.vercel.app/secret-code/bot${process.env.TELEGRAM_TOKEN}`;
 const webhookCallbackToken = `secret-code/bot${process.env.TELEGRAM_TOKEN}`;
-if (process.env.DEV !== 'developer') {
-    console.log('token telegram connect');
-    telegram_1.default.telegram.setWebhook(setWebHookToken, {
-    // certificate: './telegram/cert/crt.pem', // Path to your crt.pem
-    });
-    app.use(telegram_1.default.webhookCallback(webhookCallbackToken));
-}
+// if(process?.env?.DEV !== 'developer'){
+//   console.log('token telegram connect')
+//   bot.telegram.setWebhook(setWebHookToken,{
+//     // certificate: './telegram/cert/crt.pem', // Path to your crt.pem
+//   });
+//   app.use(bot.webhookCallback(webhookCallbackToken));
+// }
 app.use('/api', router_1.route);
 app.get('/', (_req, res) => {
     return res.send('Express Typescript on Vercel');
